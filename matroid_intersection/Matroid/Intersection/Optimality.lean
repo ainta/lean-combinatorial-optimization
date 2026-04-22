@@ -1,6 +1,6 @@
 import Mathlib.Combinatorics.Matroid.Rank.ENat
 import Mathlib.Data.Set.Card
-import Matroid.Edmonds.NoShortcutPath
+import Matroid.Intersection.NoShortcutPath
 
 /-!
 # Termination and optimality of Edmonds' algorithm
@@ -18,7 +18,7 @@ in finitely many steps (`exists_optimal_terminal_run`).
 
 open Set
 
-namespace Matroid.Edmonds
+namespace Matroid.Intersection
 
 variable {α : Type*} {M₁ M₂ : Matroid α} {I : Set α}
 
@@ -312,4 +312,4 @@ theorem exists_optimal_terminal_run [Finite α] {I : Set α}
 
 end TerminalOptimality
 
-end Matroid.Edmonds
+end Matroid.Intersection

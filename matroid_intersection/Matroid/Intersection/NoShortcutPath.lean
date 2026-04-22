@@ -1,6 +1,6 @@
 import Mathlib.Combinatorics.Matroid.Circuit
 import Mathlib.Data.Finset.Max
-import Matroid.Edmonds.AugmentingPath
+import Matroid.Intersection.AugmentingPath
 
 /-!
 # No-shortcut augmenting paths and certified augmentation steps
@@ -20,7 +20,7 @@ This module bundles:
 
 open Set
 
-namespace Matroid.Edmonds
+namespace Matroid.Intersection
 
 variable {α : Type*} {M₁ M₂ : Matroid α} {I : Set α}
 
@@ -412,4 +412,4 @@ theorem commonIndep_of_run {I₀ I : Set α}
   | @tail K L hRun hStep ih =>
       exact augmentStep_commonIndep ih hStep
 
-end Matroid.Edmonds
+end Matroid.Intersection
