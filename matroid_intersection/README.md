@@ -4,24 +4,24 @@ Toy Lean 4 project for formalizing Edmonds' augmenting-path proof of matroid int
 
 ## Current scope
 
-The current module is [`Matroid/Edmonds.lean`](./Matroid/Edmonds.lean).
+The current module is [`Matroid/Intersection.lean`](./Matroid/Intersection.lean).
 
 It now formalizes:
 
 - `Matroid.CommonIndep`: common independence for two matroids
-- `Matroid.Edmonds.Terminal`: Edmonds' exchange-graph terminal condition
+- `Matroid.Intersection.Terminal`: Edmonds' exchange-graph terminal condition
 - `exists_simpleAugPath_of_not_terminal`: nonterminal states admit an explicit finite augmenting path
 - `exists_noShortcutPath_of_not_terminal`: nonterminal states admit a certified no-shortcut path
-- `Matroid.Edmonds.NoShortcutPath`: a finite no-shortcut augmenting path
+- `Matroid.Intersection.NoShortcutPath`: a finite no-shortcut augmenting path
 - `NoShortcutPath.source_mem_reachableToSink`: such a path really is a source-to-sink exchange-graph witness
 - `NoShortcutPath.commonIndep_augment`: augmenting along such a path preserves common independence
 - `NoShortcutPath.ncard_augment`: such an augmentation increases cardinality by `1`
-- `Matroid.Edmonds.AugmentStep` and `Run`: abstract augmentation-step and run semantics
+- `Matroid.Intersection.AugmentStep` and `Run`: abstract augmentation-step and run semantics
 - `terminal_iff_no_augmentStep`: terminal states are exactly the states with no certified augmentation
 - `run_correct_of_maximal`: any certified augmentation run that cannot continue ends at a maximum
   common independent set
 - `exists_optimal_terminal_run`: some certified augmentation run reaches an optimal terminal state
-- `Matroid.Edmonds.TerminalCertificate`: the reachable-set certificate used at termination
+- `Matroid.Intersection.TerminalCertificate`: the reachable-set certificate used at termination
 - `optimal_of_certificate`: the min-max optimality argument from the terminal certificate
 - `ReachableToSink`, `reachable_certificate`, and `optimal_of_noAugmentingPath`: the exchange-graph version of the terminal theorem
 
