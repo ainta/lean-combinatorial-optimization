@@ -2036,6 +2036,19 @@ def removeLastBox (label : ℕ) (s : State) : Option (ℕ × State) :=
   | none => none
   | some (i, Q') => some (i, ⟨s.P, Q'⟩)
 
+theorem removeLastBox_eq_some {label : ℕ} {s s0 : State} {r : ℕ}
+    (h : removeLastBox label s = some (r, s0)) :
+    s0.P = s.P ∧ unrecordAt label s.Q = some (r, s0.Q) := by
+  unfold removeLastBox at h
+  cases hunrec : unrecordAt label s.Q with
+  | none =>
+      simp [hunrec] at h
+  | some p =>
+      rcases p with ⟨i, Q'⟩
+      simp [hunrec] at h
+      rcases h with ⟨rfl, rfl⟩
+      exact ⟨rfl, by simpa using hunrec⟩
+
 /-- Iterate backward RS for `n` recording labels, recovering a word when successful. -/
 def backwardAux : ℕ → State → Option (List ℕ)
   | 0, s =>
@@ -2216,41 +2229,23 @@ theorem stepBack_reconstruct {n : ℕ} {s s' : State} {x : ℕ}
     (hstate : IsBackwardState (n + 1) s)
     (hback : stepBack (n + 1) s = some (x, s')) :
     step (n + 1) x s' = s := by
-  rcases hstate with ⟨hTP, hndP, hTQ, hndQ, hshape, hpermQ⟩
-  have hk : n + 1 ∈ s.Q.flatten := by
-    have hmem : n + 1 ∈ revLabelsFrom 1 (n + 1) := by
-      simpa [Nat.add_comm] using mem_revLabelsFrom_last 1 n
-    exact hpermQ.symm.subset hmem
-  have hmax : ∀ y ∈ s.Q.flatten, y ≤ n + 1 := by
-    intro y hy
-    have hy' : y ∈ revLabelsFrom 1 (n + 1) := hpermQ.subset hy
-    have hlt : y < 1 + (n + 1) := lt_add_of_mem_revLabelsFrom hy'
-    omega
+  rcases removeLastBox_spec hstate with ⟨r, s0, hremove, hpartial, hrecord⟩
+  rcases hpartial with ⟨hTP, hndP, hTQ, _, hshape, _⟩
+  rcases removeLastBox_eq_some hremove with ⟨hP, hunrec⟩
+  rw [hP] at hTP hndP hshape
   unfold stepBack at hback
-  cases hunrec : unrecordAt (n + 1) s.Q with
+  rw [hunrec] at hback
+  cases hrev : reverseInsertRowsAt r s.P with
   | none =>
-      simp [hunrec] at hback
-  | some p =>
-      rcases p with ⟨i, Q'⟩
-      cases hrev : reverseInsertRowsAt i s.P with
-      | none =>
-          simp [hunrec, hrev] at hback
-      | some q =>
-          rcases q with ⟨y, P'⟩
-          simp [hunrec, hrev] at hback
-          rcases hback with ⟨rfl, rfl⟩
-          have hrecord : recordAt (n + 1) i Q' = s.Q :=
-            recordAt_of_unrecordAt_max hTQ hndQ hmax hk hunrec
-          have hshape' : s.P.map List.length = bumpAt i (Q'.map List.length) := by
-            calc
-              s.P.map List.length = s.Q.map List.length := hshape
-              _ = (recordAt (n + 1) i Q').map List.length := by rw [hrecord]
-              _ = bumpAt i (Q'.map List.length) := shape_recordAt (n + 1) i Q'
-          have hnonemptyQ' : RowsNonempty Q' := rowsNonempty_of_unrecordAt hTQ.1 hunrec
-          have hins : insertRows y P' = ⟨s.P, i⟩ :=
-            insertRows_of_reverseInsertRowsAt_shape hTP hndP hnonemptyQ' hshape' hrev
-          unfold step
-          simp [hins, hrecord]
+      simp [hrev] at hback
+  | some q =>
+      rcases q with ⟨y, P'⟩
+      simp [hrev] at hback
+      rcases hback with ⟨rfl, rfl⟩
+      have hins : insertRows y P' = ⟨s.P, r⟩ :=
+        insertRows_of_reverseInsertRowsAt_shape hTP hndP hTQ.1 hshape hrev
+      unfold step
+      simp [hins, hrecord]
 
 theorem stepBack_preserves_except_column {n : ℕ} {s s' : State} {x : ℕ}
     (hstate : IsBackwardState (n + 1) s)
@@ -2261,72 +2256,26 @@ theorem stepBack_preserves_except_column {n : ℕ} {s s' : State} {x : ℕ}
     EntriesNodup s'.Q ∧
     s'.P.map List.length = s'.Q.map List.length ∧
     List.Perm s'.Q.flatten (revLabelsFrom 1 n) := by
-  rcases hstate with ⟨hTP, hndP, hTQ, hndQ, hshape, hpermQ⟩
-  have hk : n + 1 ∈ s.Q.flatten := by
-    have hmem : n + 1 ∈ revLabelsFrom 1 (n + 1) := by
-      simpa [Nat.add_comm] using mem_revLabelsFrom_last 1 n
-    exact hpermQ.symm.subset hmem
-  have hmax : ∀ y ∈ s.Q.flatten, y ≤ n + 1 := by
-    intro y hy
-    have hy' : y ∈ revLabelsFrom 1 (n + 1) := hpermQ.subset hy
-    have hlt : y < 1 + (n + 1) := lt_add_of_mem_revLabelsFrom hy'
-    omega
+  rcases removeLastBox_spec hstate with ⟨r, s0, hremove, hpartial, _⟩
+  rcases hpartial with ⟨hTP, hndP, hTQ, hndQ, hshape, hpermQ⟩
+  rcases removeLastBox_eq_some hremove with ⟨hP, hunrec⟩
+  rw [hP] at hTP hndP hshape
   unfold stepBack at hback
-  cases hunrec : unrecordAt (n + 1) s.Q with
+  rw [hunrec] at hback
+  cases hrev : reverseInsertRowsAt r s.P with
   | none =>
-      simp [hunrec] at hback
-  | some p =>
-      rcases p with ⟨i, Q'⟩
-      cases hrev : reverseInsertRowsAt i s.P with
-      | none =>
-          simp [hunrec, hrev] at hback
-      | some q =>
-          rcases q with ⟨y, P'⟩
-          simp [hunrec, hrev] at hback
-          rcases hback with ⟨rfl, rfl⟩
-          have hrecord : recordAt (n + 1) i Q' = s.Q :=
-            recordAt_of_unrecordAt_max hTQ hndQ hmax hk hunrec
-          have hi : i ≤ Q'.length := unrecordAt_index_le_length_result hunrec
-          have hflat : List.Perm s.Q.flatten ((n + 1) :: Q'.flatten) := by
-            simpa [hrecord, List.flatten] using perm_flatten_recordAt (n + 1) i Q' hi
-          have hpermQ' : List.Perm Q'.flatten (revLabelsFrom 1 n) := by
-            have hperm' : List.Perm ((n + 1) :: Q'.flatten) (revLabelsFrom 1 (n + 1)) := by
-              exact hflat.symm.trans hpermQ
-            rw [revLabelsFrom_succ] at hperm'
-            have hperm'' :
-                List.Perm ((n + 1) :: Q'.flatten) ((n + 1) :: revLabelsFrom 1 n) := by
-              simpa [Nat.add_comm] using hperm'
-            exact List.Perm.cons_inv hperm''
-          have hndQ' : EntriesNodup Q' := by
-            have hnodupCons : ((n + 1) :: Q'.flatten).Nodup := hflat.nodup_iff.mp hndQ
-            exact (List.nodup_cons.1 hnodupCons).2
-          have hltQ' : EntriesLt (n + 1) Q' := by
-            intro row hrow z hz
-            have hz' : z ∈ Q'.flatten := List.mem_flatten_of_mem hrow hz
-            have hz'' : z ∈ revLabelsFrom 1 n := hpermQ'.subset hz'
-            have hltz : z < 1 + n := lt_add_of_mem_revLabelsFrom hz''
-            omega
-          have hTQ' : IsRSTableau Q' := by
-            have hTrecord : IsRSTableau (recordAt (n + 1) i Q') := by
-              simpa [hrecord] using hTQ
-            exact isRSTableau_of_recordAt
-              (rowsNonempty_of_unrecordAt hTQ.1 hunrec)
-              hltQ'
-              hTrecord
-          have hshape' :
-              s.P.map List.length = bumpAt i (Q'.map List.length) := by
-            calc
-              s.P.map List.length = s.Q.map List.length := hshape
-              _ = (recordAt (n + 1) i Q').map List.length := by rw [hrecord]
-              _ = bumpAt i (Q'.map List.length) := shape_recordAt (n + 1) i Q'
-          have hnonemptyQ' : RowsNonempty Q' := rowsNonempty_of_unrecordAt hTQ.1 hunrec
-          have hrowsP' : RowsStrict P' :=
-            reverseInsertRowsAt_rowsStrict hTP hndP hnonemptyQ' hshape' hrev
-          have hndP' : EntriesNodup P' :=
-            entriesNodup_of_reverseInsertRowsAt_shape hTP hndP hnonemptyQ' hshape' hrev
-          have hshapeP' : P'.map List.length = Q'.map List.length :=
-            reverseInsertRowsAt_shape hnonemptyQ' hshape' hrev
-          exact ⟨hrowsP', hndP', hTQ', hndQ', hshapeP', hpermQ'⟩
+      simp [hrev] at hback
+  | some q =>
+      rcases q with ⟨y, P'⟩
+      simp [hrev] at hback
+      rcases hback with ⟨rfl, rfl⟩
+      have hrowsP' : RowsStrict P' :=
+        reverseInsertRowsAt_rowsStrict hTP hndP hTQ.1 hshape hrev
+      have hndP' : EntriesNodup P' :=
+        entriesNodup_of_reverseInsertRowsAt_shape hTP hndP hTQ.1 hshape hrev
+      have hshapeP' : P'.map List.length = s0.Q.map List.length :=
+        reverseInsertRowsAt_shape hTQ.1 hshape hrev
+      exact ⟨hrowsP', hndP', hTQ, hndQ, hshapeP', hpermQ⟩
 
 theorem rowsNonempty_of_shape_eq_of_rowsNonempty {rows qrows : List Row}
     (hshape : rows.map List.length = qrows.map List.length)
@@ -2349,39 +2298,20 @@ theorem stepBack_fresh {n : ℕ} {s s' : State} {x : ℕ}
     (hstate : IsBackwardState (n + 1) s)
     (hback : stepBack (n + 1) s = some (x, s')) :
     x ∉ s'.P.flatten := by
-  rcases hstate with ⟨hTP, hndP, hTQ, hndQ, hshape, hpermQ⟩
-  have hk : n + 1 ∈ s.Q.flatten := by
-    have hmem : n + 1 ∈ revLabelsFrom 1 (n + 1) := by
-      simpa [Nat.add_comm] using mem_revLabelsFrom_last 1 n
-    exact hpermQ.symm.subset hmem
-  have hmax : ∀ y ∈ s.Q.flatten, y ≤ n + 1 := by
-    intro y hy
-    have hy' : y ∈ revLabelsFrom 1 (n + 1) := hpermQ.subset hy
-    have hlt : y < 1 + (n + 1) := lt_add_of_mem_revLabelsFrom hy'
-    omega
+  rcases removeLastBox_spec hstate with ⟨r, s0, hremove, hpartial, _⟩
+  rcases hpartial with ⟨hTP, hndP, hTQ, _, hshape, _⟩
+  rcases removeLastBox_eq_some hremove with ⟨hP, hunrec⟩
+  rw [hP] at hTP hndP hshape
   unfold stepBack at hback
-  cases hunrec : unrecordAt (n + 1) s.Q with
+  rw [hunrec] at hback
+  cases hrev : reverseInsertRowsAt r s.P with
   | none =>
-      simp [hunrec] at hback
-  | some p =>
-      rcases p with ⟨i, Q'⟩
-      cases hrev : reverseInsertRowsAt i s.P with
-      | none =>
-          simp [hunrec, hrev] at hback
-      | some q =>
-          rcases q with ⟨y, P'⟩
-          simp [hunrec, hrev] at hback
-          rcases hback with ⟨rfl, rfl⟩
-          have hrecord : recordAt (n + 1) i Q' = s.Q :=
-            recordAt_of_unrecordAt_max hTQ hndQ hmax hk hunrec
-          have hshape' :
-              s.P.map List.length = bumpAt i (Q'.map List.length) := by
-            calc
-              s.P.map List.length = s.Q.map List.length := hshape
-              _ = (recordAt (n + 1) i Q').map List.length := by rw [hrecord]
-              _ = bumpAt i (Q'.map List.length) := shape_recordAt (n + 1) i Q'
-          have hnonemptyQ' : RowsNonempty Q' := rowsNonempty_of_unrecordAt hTQ.1 hunrec
-          exact not_mem_of_reverseInsertRowsAt_shape hTP hndP hnonemptyQ' hshape' hrev
+      simp [hrev] at hback
+  | some q =>
+      rcases q with ⟨y, P'⟩
+      simp [hrev] at hback
+      rcases hback with ⟨rfl, rfl⟩
+      exact not_mem_of_reverseInsertRowsAt_shape hTP hndP hTQ.1 hshape hrev
 
 theorem stepBack_preserves {n : ℕ} {s s' : State} {x : ℕ}
     (hstate : IsBackwardState (n + 1) s)
@@ -2389,50 +2319,31 @@ theorem stepBack_preserves {n : ℕ} {s s' : State} {x : ℕ}
     IsBackwardState n s' := by
   rcases stepBack_preserves_except_column hstate hback with
     ⟨hrowsP', hndP', hTQ', hndQ', hshapeP', hpermQ'⟩
-  rcases hstate with ⟨hTP, hndP, hTQ, hndQ, hshape, hpermQ⟩
-  have hk : n + 1 ∈ s.Q.flatten := by
-    have hmem : n + 1 ∈ revLabelsFrom 1 (n + 1) := by
-      simpa [Nat.add_comm] using mem_revLabelsFrom_last 1 n
-    exact hpermQ.symm.subset hmem
-  have hmax : ∀ y ∈ s.Q.flatten, y ≤ n + 1 := by
-    intro y hy
-    have hy' : y ∈ revLabelsFrom 1 (n + 1) := hpermQ.subset hy
-    have hlt : y < 1 + (n + 1) := lt_add_of_mem_revLabelsFrom hy'
-    omega
+  rcases removeLastBox_spec hstate with ⟨r, s0, hremove, hpartial, _⟩
+  rcases hpartial with ⟨hTP, hndP, _, _, hshape, _⟩
+  rcases removeLastBox_eq_some hremove with ⟨hP, hunrec⟩
+  rw [hP] at hTP hndP hshape
   unfold stepBack at hback
-  cases hunrec : unrecordAt (n + 1) s.Q with
+  rw [hunrec] at hback
+  cases hrev : reverseInsertRowsAt r s.P with
   | none =>
-      simp [hunrec] at hback
-  | some p =>
-      rcases p with ⟨i, Q'⟩
-      cases hrev : reverseInsertRowsAt i s.P with
-      | none =>
-          simp [hunrec, hrev] at hback
-      | some q =>
-          rcases q with ⟨y, P'⟩
-          simp [hunrec, hrev] at hback
-          rcases hback with ⟨rfl, rfl⟩
-          have hrecord : recordAt (n + 1) i Q' = s.Q :=
-            recordAt_of_unrecordAt_max hTQ hndQ hmax hk hunrec
-          have hshape' :
-              s.P.map List.length = bumpAt i (Q'.map List.length) := by
-            calc
-              s.P.map List.length = s.Q.map List.length := hshape
-              _ = (recordAt (n + 1) i Q').map List.length := by rw [hrecord]
-              _ = bumpAt i (Q'.map List.length) := shape_recordAt (n + 1) i Q'
-          have hnonemptyQ' : RowsNonempty Q' := rowsNonempty_of_unrecordAt hTQ.1 hunrec
-          have hcolP' : ColumnStrict P' :=
-            reverseInsertRowsAt_columnStrict hTP hndP hTQ' hshape' hrev
-          have hnonemptyP' : RowsNonempty P' :=
-            rowsNonempty_of_shape_eq_of_rowsNonempty
-              (rows := P') (qrows := Q')
-              (by simpa using hshapeP') hTQ'.1
-          have hshapeSortedP' : ShapeSorted P' := by
-            have hshapeSortedQ' : ShapeSorted Q' := hTQ'.2.2.1
-            unfold ShapeSorted at hshapeSortedQ' ⊢
-            simpa [hshapeP'] using hshapeSortedQ'
-          refine ⟨?_, hndP', hTQ', hndQ', hshapeP', hpermQ'⟩
-          exact ⟨hnonemptyP', hrowsP', hshapeSortedP', hcolP'⟩
+      simp [hrev] at hback
+  | some q =>
+      rcases q with ⟨y, P'⟩
+      simp [hrev] at hback
+      rcases hback with ⟨rfl, rfl⟩
+      have hcolP' : ColumnStrict P' :=
+        reverseInsertRowsAt_columnStrict hTP hndP hTQ' hshape hrev
+      have hnonemptyP' : RowsNonempty P' :=
+        rowsNonempty_of_shape_eq_of_rowsNonempty
+          (rows := P') (qrows := s0.Q)
+          (by simpa using hshapeP') hTQ'.1
+      have hshapeSortedP' : ShapeSorted P' := by
+        have hshapeSortedQ' : ShapeSorted s0.Q := hTQ'.2.2.1
+        unfold ShapeSorted at hshapeSortedQ' ⊢
+        simpa [hshapeP'] using hshapeSortedQ'
+      refine ⟨?_, hndP', hTQ', hndQ', hshapeP', hpermQ'⟩
+      exact ⟨hnonemptyP', hrowsP', hshapeSortedP', hcolP'⟩
 
 theorem rows_eq_nil_of_rowsNonempty_flatten_eq_nil {rows : List Row}
     (hnonempty : RowsNonempty rows)
