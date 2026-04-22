@@ -14,7 +14,7 @@ sources of `M₁` and as the sinks of `M₂`. We expose it once as `IndepExtensi
 
 open Set
 
-namespace Matroid.Edmonds
+namespace Matroid.Intersection
 
 variable {α : Type*} {M₁ M₂ : Matroid α} {I : Set α}
 
@@ -75,4 +75,4 @@ def ReachableToSink (M₁ M₂ : Matroid α) (I : Set α) : Set α :=
 def Terminal (M₁ M₂ : Matroid α) (I : Set α) : Prop :=
   Disjoint (SourceSet M₁ I) (ReachableToSink M₁ M₂ I)
 
-end Matroid.Edmonds
+end Matroid.Intersection

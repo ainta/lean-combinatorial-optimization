@@ -1,4 +1,4 @@
-import Matroid.Edmonds.ExchangeGraph
+import Matroid.Intersection.ExchangeGraph
 
 /-!
 # Simple augmenting paths in the exchange graph
@@ -11,7 +11,7 @@ six `*_of_minimal` lemmas consumed downstream when promoting a minimal path to a
 
 open Set
 
-namespace Matroid.Edmonds
+namespace Matroid.Intersection
 
 variable {α : Type*} {M₁ M₂ : Matroid α} {I : Set α}
 
@@ -560,4 +560,4 @@ theorem SimpleAugPath.y_inj_of_minimal {n : ℕ}
     · apply Fin.ext
       omega
 
-end Matroid.Edmonds
+end Matroid.Intersection

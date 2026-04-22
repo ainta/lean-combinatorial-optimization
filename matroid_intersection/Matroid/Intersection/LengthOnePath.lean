@@ -13,7 +13,7 @@ independently of the general `NoShortcutPath` machinery.
 
 open Set
 
-namespace Matroid.Edmonds
+namespace Matroid.Intersection
 
 variable {α : Type*} {M₁ M₂ : Matroid α} {I : Set α} {y x₀ x₁ : α}
 
@@ -92,4 +92,4 @@ theorem LengthOnePath.ncard_augment
 
 end Cardinality
 
-end Matroid.Edmonds
+end Matroid.Intersection
