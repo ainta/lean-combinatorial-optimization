@@ -1,25 +1,23 @@
-# lean-combinatorial-optimization
+# lean-algorithms
 
-Lean formalizations of combinatorial optimization arguments and algorithms.
+Lean formalizations of algorithms and their correctness.
 
-## Projects
+## Areas
 
-- `matroid_intersection/`: a Lean 4 development around Edmonds' augmenting-path proof for matroid
-  intersection
-- `max_flow_min_cut/`: a Lean 4 development of the max-flow min-cut theorem
+- [`combinatoric_optimization/`](./combinatoric_optimization) — combinatorial optimization
+  - [`matroid_intersection/`](./combinatoric_optimization/matroid_intersection) — Edmonds-style proof of the matroid-intersection min-max theorem, plus an algorithm-correctness layer parameterized by an abstract search procedure
+  - [`max_flow_min_cut/`](./combinatoric_optimization/max_flow_min_cut) — Lean 4 development of the max-flow / min-cut theorem
 
 ## Build
 
-Each project is currently self-contained. For the matroid intersection development:
+Each project under `combinatoric_optimization/` is currently self-contained. For example:
 
 ```bash
-cd matroid_intersection
+cd combinatoric_optimization/matroid_intersection
 lake build Matroid
 ```
 
-For the max-flow / min-cut development:
-
 ```bash
-cd max_flow_min_cut
+cd combinatoric_optimization/max_flow_min_cut
 lake build MaxFlowMinCut
 ```
