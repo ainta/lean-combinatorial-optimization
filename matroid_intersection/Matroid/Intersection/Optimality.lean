@@ -241,6 +241,16 @@ theorem optimal_of_certificate [Finite α]
       simpa [add_comm] using Set.encard_diff_add_encard_of_subset
         (s := I ∩ U) (t := I) inter_subset_left
 
+/-- For a terminal-certified common independent set, the cardinality equals the rank-partition
+value `M₁.eRk U + M₂.eRk (M₁.E \ U)` at the certificate set `U`. -/
+theorem TerminalCertificate.encard_eq_rank_partition [Finite α]
+    (hE : SameGround M₁ M₂) (hI : CommonIndep M₁ M₂ I)
+    (hU : TerminalCertificate M₁ M₂ I U) :
+    I.encard = M₁.eRk U + M₂.eRk (M₁.E \ U) := by
+  rw [left_rank_eq_of_certificate hE hI hU, right_rank_eq_of_certificate hE hI hU]
+  simpa [add_comm] using
+    (Set.encard_diff_add_encard_of_subset (s := I ∩ U) (t := I) inter_subset_left).symm
+
 /-- If no source can reach a sink in the exchange graph, the reachable set is a terminal
 certificate. -/
 theorem reachable_certificate
