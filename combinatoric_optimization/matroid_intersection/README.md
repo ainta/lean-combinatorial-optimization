@@ -1,34 +1,93 @@
 # matroid_intersection
 
-Toy Lean 4 project for formalizing Edmonds' augmenting-path proof of matroid intersection with mathlib's matroid library.
+A Lean 4 development of the **matroid intersection min-max theorem** via the Edmonds-style
+augmenting-path argument, plus an algorithm-correctness layer parameterized by an abstract
+search procedure.
 
-## Current scope
+The headline theorem (`Matroid.exists_max_commonIndep_eq_min_rank_partition`):
 
-The current module is [`Matroid/Intersection.lean`](./Matroid/Intersection.lean).
+> For two matroids `M₁`, `M₂` on the same finite ground set `E`, the maximum size of a
+> common independent set equals the minimum value of `rk M₁ U + rk M₂ (E ∖ U)` over `U ⊆ E`,
+> with explicit witnesses `(I, U)`.
 
-It now formalizes:
+## Proof flow
 
-- `Matroid.CommonIndep`: common independence for two matroids
-- `Matroid.Intersection.Terminal`: Edmonds' exchange-graph terminal condition
-- `exists_simpleAugPath_of_not_terminal`: nonterminal states admit an explicit finite augmenting path
-- `exists_noShortcutPath_of_not_terminal`: nonterminal states admit a certified no-shortcut path
-- `Matroid.Intersection.NoShortcutPath`: a finite no-shortcut augmenting path
-- `NoShortcutPath.source_mem_reachableToSink`: such a path really is a source-to-sink exchange-graph witness
-- `NoShortcutPath.commonIndep_augment`: augmenting along such a path preserves common independence
-- `NoShortcutPath.ncard_augment`: such an augmentation increases cardinality by `1`
-- `Matroid.Intersection.AugmentStep` and `Run`: abstract augmentation-step and run semantics
-- `terminal_iff_no_augmentStep`: terminal states are exactly the states with no certified augmentation
-- `run_correct_of_maximal`: any certified augmentation run that cannot continue ends at a maximum
-  common independent set
-- `exists_optimal_terminal_run`: some certified augmentation run reaches an optimal terminal state
-- `Matroid.Intersection.TerminalCertificate`: the reachable-set certificate used at termination
-- `optimal_of_certificate`: the min-max optimality argument from the terminal certificate
-- `ReachableToSink`, `reachable_certificate`, and `optimal_of_noAugmentingPath`: the exchange-graph version of the terminal theorem
+```mermaid
+flowchart TD
+  classDef step fill:#fef3c7,stroke:#f59e0b,color:#111
+  classDef thm fill:#e8f5ff,stroke:#3b82f6,color:#111
+  classDef conclusion fill:#dcfce7,stroke:#16a34a,color:#111
 
-The development now proves the finite abstract correctness statement: repeated certified
-augmentation in the exchange graph terminates, and any maximal certified run ends at a maximum
-cardinality common independent set. It still does not formalize a concrete executable search
-procedure such as BFS/DFS for finding the next augmenting path witness.
+  Setup["Inputs: M₁, M₂ : Matroid α<br/>SameGround M₁ M₂, [Finite α]"]:::step
+  Empty["Start: I := ∅<br/>(CommonIndep.empty)"]:::step
+  Loop{"Terminal M₁ M₂ I ?"}:::step
+
+  Search["exists_noShortcutPath_of_not_terminal:<br/>nonterminal ⇒ NoShortcutPath of length n"]:::thm
+  Augment["NoShortcutPath.commonIndep_augment:<br/>I' := augmentPath I x y is common indep<br/>NoShortcutPath.ncard_augment: |I'| = |I|+1"]:::thm
+  WF["augmentStep_wf:<br/>each step strictly ↑ cardinality<br/>+ ground set finite ⇒ termination"]:::thm
+
+  Cert["reachable_certificate:<br/>U := ReachableToSink M₁ M₂ I<br/>is a TerminalCertificate"]:::thm
+  RankEq["TerminalCertificate.encard_eq_rank_partition:<br/>|I| = rk(M₁, U) + rk(M₂, E ∖ U)"]:::thm
+  Bound["CommonIndep.encard_le_rank_partition:<br/>|J| ≤ rk(M₁, V) + rk(M₂, E ∖ V)<br/>for any common indep J and any V ⊆ E"]:::thm
+
+  Headline(["exists_max_commonIndep_eq_min_rank_partition:<br/>∃ I U : maximum common indep<br/>= minimum rank partition"]):::conclusion
+
+  Setup --> Empty --> Loop
+  Loop -- no --> Search --> Augment --> Loop
+  WF -. iterate terminates .-> Loop
+  Loop -- yes --> Cert --> RankEq --> Headline
+  Bound --> Headline
+```
+
+## Module structure
+
+The development is split into a **theorem layer** (`Matroid.Intersection.*`) that proves the
+min-max theorem, and an **algorithm layer** (`Matroid.Edmonds.*`) that parameterizes the proof
+by an abstract search procedure.
+
+```mermaid
+flowchart LR
+  classDef common fill:#fef3c7,stroke:#f59e0b,color:#111
+  classDef inter fill:#e8f5ff,stroke:#3b82f6,color:#111
+  classDef hl fill:#dcfce7,stroke:#16a34a,color:#111
+  classDef edm fill:#fce7f3,stroke:#db2777,color:#111
+
+  CI["Matroid.CommonIndep"]:::common
+  EG["Intersection.ExchangeGraph"]:::inter
+  AP["Intersection.AugmentingPath"]:::inter
+  NSP["Intersection.NoShortcutPath"]:::inter
+  Opt["Intersection.Optimality"]:::inter
+  LO["Intersection.LengthOnePath"]:::inter
+  IH(["Matroid.Intersection<br/>min-max headline"]):::hl
+  Search["Edmonds.Search"]:::edm
+  Algo["Edmonds.Algorithm"]:::edm
+  Edm(["Matroid.Edmonds<br/>algorithm umbrella"]):::edm
+
+  CI --> EG --> AP --> NSP --> Opt
+  NSP --> LO
+  Opt --> IH
+  LO --> IH
+  IH --> Search --> Algo --> Edm
+```
+
+| Module | What it contains |
+|---|---|
+| `Matroid.CommonIndep` | top-level `CommonIndep`, `augmentLengthOne` |
+| `Matroid.Intersection.ExchangeGraph` | exchange graph, `IndepExtension`/`SourceSet`/`SinkSet`, `Terminal`, `TerminalCertificate` |
+| `Matroid.Intersection.AugmentingPath` | `SimpleAugPath` and the minimality / splice machinery |
+| `Matroid.Intersection.NoShortcutPath` | `NoShortcutPath`, `AugmentStep`, `Run`, terminal iff, common-indep preservation |
+| `Matroid.Intersection.Optimality` | `augmentStep_wf`, `optimal_of_certificate`, `exists_optimal_terminal_run`, `TerminalCertificate.encard_eq_rank_partition` |
+| `Matroid.Intersection.LengthOnePath` | length-one augmenting step (separate, smaller machinery) |
+| `Matroid.Intersection` | umbrella + `CommonIndep.empty`, `CommonIndep.encard_le_rank_partition`, `exists_max_commonIndep_eq_min_rank_partition` |
+| `Matroid.Edmonds.Search` | `SearchSpec` interface; noncomputable `classical` witness |
+| `Matroid.Edmonds.Algorithm` | `SearchSpec.iterate` + correctness theorems; algorithmic min-max |
+| `Matroid.Edmonds` | algorithm-layer umbrella |
+
+## Out of scope
+
+- A computable BFS-style `SearchSpec` instance — would require a decidability story for
+  `M.Indep` (e.g. `DecMatroid`) and `Finset`-based augmentation; tracked as Layer 3.
+- Polynomial-time complexity analysis of the iteration.
 
 ## References
 
@@ -44,6 +103,6 @@ procedure such as BFS/DFS for finding the next augmenting path witness.
 ## Build
 
 ```bash
-cd matroid_intersection
-lake build Matroid
+cd combinatoric_optimization/matroid_intersection
+lake build
 ```
