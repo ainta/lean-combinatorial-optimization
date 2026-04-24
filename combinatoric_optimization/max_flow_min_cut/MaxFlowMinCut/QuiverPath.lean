@@ -18,7 +18,7 @@ namespace Quiver.Path
 
 open List
 
-variable {V : Type*} [Quiver V] [DecidableEq V]
+variable {V : Type*} [Quiver V]
 
 lemma length_cast {a b c : V} (h : a = b) (p : Path a c) : (h ▸ p).length = p.length := by
   cases h
@@ -53,8 +53,9 @@ lemma shorten_of_not_nodup {a b : V} (p : Path a b) (hp : ¬ p.vertices.Nodup) :
     calc
       p₁.comp rest = p := hp_split_n.symm
       _ = p₁'.comp (cyc.comp p₃) := hp_as
-  have hlen : p₁.length = p₁'.length := by simpa [hp₁_len, hp₁'_len]
-  have hcomp := (Path.comp_inj' (p₁ := p₁) (p₂ := p₁') (q₁ := rest) (q₂ := cyc.comp p₃) hlen).1 hsame
+  have hlen : p₁.length = p₁'.length := by simp [hp₁_len, hp₁'_len]
+  have hcomp :=
+    (Path.comp_inj' (p₁ := p₁) (p₂ := p₁') (q₁ := rest) (q₂ := cyc.comp p₃) hlen).1 hsame
   have hprefix : p₁ = p₁' := hcomp.1
   have hrest : rest = cyc.comp p₃ := hcomp.2
   subst hprefix
@@ -70,7 +71,8 @@ lemma shorten_of_not_nodup {a b : V} (p : Path a b) (hp : ¬ p.vertices.Nodup) :
   let q : Path a b := p₁.comp qtail
   refine ⟨q, ?_⟩
   have htail : qtail.length < cyc.length + p₃.length := by
-    have hqtaillen : qtail.length = p₃.length := by simpa [qtail] using length_cast hvv p₃
+    have hqtaillen : qtail.length = p₃.length := by
+      simpa [qtail] using length_cast hvv p₃
     omega
   have : p₁.length + qtail.length < p₁.length + (cyc.length + p₃.length) := by
     exact Nat.add_lt_add_left htail _

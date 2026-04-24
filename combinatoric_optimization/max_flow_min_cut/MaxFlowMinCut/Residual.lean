@@ -130,11 +130,6 @@ lemma isMinCut_reachable_of_noResidualPath {f : Flow N}
   have hweak : f.value ≤ cutCapacity N T := value_le_cutCapacity f hT
   simpa [value_eq_cutCapacity_reachable hNo] using hweak
 
-lemma isMaxFlow_and_isMinCut_of_noResidualPath {f : Flow N}
-    (hNo : ¬ Nonempty (ResidualPath f N.source N.sink)) :
-    IsMaxFlow f ∧ IsMinCut (N := N) f.reachable := by
-  exact ⟨isMaxFlow_of_noResidualPath hNo, isMinCut_reachable_of_noResidualPath hNo⟩
-
 end Flow
 
 end Network

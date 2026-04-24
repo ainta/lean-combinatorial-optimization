@@ -1,2 +1,1 @@
-import Matroid.Intersection
-import Matroid.Edmonds
+import Matroid.Edmonds.Algorithm

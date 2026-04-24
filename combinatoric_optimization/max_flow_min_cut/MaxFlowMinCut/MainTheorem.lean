@@ -56,19 +56,14 @@ theorem exists_terminalFlow :
   obtain ⟨f, hge, hNo⟩ := exists_terminalFlow_from (N := N) (zeroFlow (N := N))
   exact ⟨f, hNo⟩
 
-theorem exists_isMaxFlow_and_isMinCut :
-    ∃ f : Flow N, ∃ S : Finset V, IsMaxFlow f ∧ IsMinCut (N := N) S := by
-  obtain ⟨f, hNo⟩ := exists_terminalFlow (N := N)
-  exact ⟨f, f.reachable, isMaxFlow_and_isMinCut_of_noResidualPath hNo⟩
-
 theorem exists_isMaxFlow_and_isMinCut_and_value_eq_cutCapacity :
     ∃ f : Flow N, ∃ S : Finset V,
       IsMaxFlow f ∧ IsMinCut (N := N) S ∧ f.value = cutCapacity N S := by
   obtain ⟨f, hNo⟩ := exists_terminalFlow (N := N)
   refine ⟨f, f.reachable, ?_⟩
   exact ⟨
-    (isMaxFlow_and_isMinCut_of_noResidualPath hNo).1,
-    (isMaxFlow_and_isMinCut_of_noResidualPath hNo).2,
+    isMaxFlow_of_noResidualPath hNo,
+    isMinCut_reachable_of_noResidualPath hNo,
     value_eq_cutCapacity_reachable hNo
   ⟩
 

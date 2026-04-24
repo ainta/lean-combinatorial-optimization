@@ -334,8 +334,8 @@ lemma augBal_augmentVal_of_nodup {f : Flow N} :
                     · have hxnew : x ≠ (p.cons (ResidualEdge.forward h)).end := by
                         intro hEq
                         exact hne (hEq.symm.trans hxp)
-                      simp [hxp, hxnew, hpenew]
-                    · simp [hxp, Quiver.Path.end_eq p]
+                      simp [hxp]
+                    · simp
       | backward h =>
           have hne : (p.cons (ResidualEdge.backward h)).end ≠ p.end := by
             intro hEq
@@ -373,9 +373,9 @@ lemma augBal_augmentVal_of_nodup {f : Flow N} :
                     · have hxnew : x ≠ (p.cons (ResidualEdge.backward h)).end := by
                         intro hEq
                         exact hne (hEq.symm.trans hxp)
-                      simp [hxp, hxnew, hpenew]
+                      simp [hxp]
                       omega
-                    · simp [hxp, Quiver.Path.end_eq p]
+                    · simp
                       omega
 
 theorem exists_simple_residualPath {f : Flow N} {u v : V} (p : ResidualPath f u v) :

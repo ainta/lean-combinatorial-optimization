@@ -80,10 +80,8 @@ private theorem exists_simpleSuffix_of_chain
               | cons_cons hyx hrest =>
                   rcases hxy with hxy | hxy
                   · exact (hx₀_not_mem hxy.1).elim
-                  ·
-                    rcases hyx with hyx | hyx
-                    ·
-                      obtain ⟨n, P, rfl⟩ := exists_simpleSuffix_of_chain hyx.2.2.1 hrest (by
+                  · rcases hyx with hyx | hyx
+                    · obtain ⟨n, P, rfl⟩ := exists_simpleSuffix_of_chain hyx.2.2.1 hrest (by
                         simpa using hsink)
                       refine ⟨n + 1, ?_⟩
                       refine
@@ -167,7 +165,7 @@ private def SimpleAugPath.suffix {n : ℕ} (P : SimpleAugPath M₁ M₂ I n)
     simpa [xLast, Nat.sub_add_cancel hm] using P.right_sink
 
 /-- Minimality predicate for explicit augmenting paths. -/
-def SimpleAugPath.Minimal {n : ℕ} (P : SimpleAugPath M₁ M₂ I n) : Prop :=
+def SimpleAugPath.Minimal {n : ℕ} (_ : SimpleAugPath M₁ M₂ I n) : Prop :=
   ∀ m, m < n → IsEmpty (SimpleAugPath M₁ M₂ I m)
 
 /-- Any nonterminal exchange-graph state admits a length-minimal augmenting path. -/
@@ -480,7 +478,7 @@ theorem SimpleAugPath.x_inj_of_minimal {n : ℕ}
           intro hj_eq
           apply hjlast
           apply Fin.ext
-          simpa [hj_eq]
+          simp [hj_eq]
         omega
       let i' : Fin n := ⟨i.1, by omega⟩
       let j' : Fin n := ⟨j.1, hj_lt_n⟩
@@ -517,7 +515,7 @@ theorem SimpleAugPath.x_inj_of_minimal {n : ℕ}
             intro hi_eq
             apply hilast
             apply Fin.ext
-            simpa [hi_eq]
+            simp [hi_eq]
           omega
         let i' : Fin n := ⟨i.1, hi_lt_n⟩
         let j' : Fin n := ⟨j.1, by omega⟩

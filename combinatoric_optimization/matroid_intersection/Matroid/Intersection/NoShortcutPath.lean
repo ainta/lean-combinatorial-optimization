@@ -170,6 +170,29 @@ theorem terminal_iff_no_augmentStep :
   · exact no_augmentStep_of_terminal
   · exact terminal_of_no_augmentStep
 
+private theorem exists_x_mem_circuit_of_subset_augmentPath
+    {M : Matroid α} {C : Set α} {n : ℕ} {x : Fin (n + 1) → α} {y : Fin n → α}
+    (hI : M.Indep I) (hCJ : C ⊆ augmentPath I x y) (hC : M.IsCircuit C) :
+    ∃ i, x i ∈ C := by
+  by_contra hnone
+  have hCI : C ⊆ I := by
+    intro z hz
+    have hzJ := hCJ hz
+    rcases hzJ with hzI | hzX
+    · exact hzI.1
+    · rcases hzX with ⟨i, rfl⟩
+      exact False.elim (hnone ⟨i, by simpa⟩)
+  exact hC.dep.not_indep (hI.subset hCI)
+
+private theorem augmentPath_subset_ground
+    {M : Matroid α} {n : ℕ} {x : Fin (n + 1) → α} {y : Fin n → α}
+    (hI_ground : I ⊆ M.E) (hx_ground : ∀ i, x i ∈ M.E) :
+    augmentPath I x y ⊆ M.E := by
+  intro z hz
+  rcases hz with hz | ⟨i, rfl⟩
+  · exact hI_ground hz.1
+  · exact hx_ground i
+
 private theorem left_indep_of_noShortcut {n : ℕ}
     (hI : M₁.Indep I) (P : NoShortcutPath M₁ M₂ I n) :
     M₁.Indep (augmentPath I P.x P.y) := by
@@ -182,24 +205,12 @@ private theorem left_indep_of_noShortcut {n : ℕ}
     · intro j
       simpa [xNext] using (P.left_step j).subset_ground (by simp [xNext])
   have hJ_ground : J ⊆ M₁.E := by
-    intro z hz
-    rcases hz with hz | hz
-    · exact hI.subset_ground hz.1
-    · rcases hz with ⟨i, rfl⟩
-      exact hx_ground i
+    exact augmentPath_subset_ground hI.subset_ground hx_ground
   by_contra hJ
   have hJ_dep : M₁.Dep J := (not_indep_iff hJ_ground).1 hJ
   obtain ⟨C, hCJ, hC⟩ := hJ_dep.exists_isCircuit_subset
-  have hxC : ∃ i, P.x i ∈ C := by
-    by_contra hnone
-    have hCI : C ⊆ I := by
-      intro z hz
-      have hzJ := hCJ hz
-      rcases hzJ with hzI | hzX
-      · exact hzI.1
-      · rcases hzX with ⟨i, rfl⟩
-        exact False.elim (hnone ⟨i, by simpa⟩)
-    exact hC.dep.not_indep (hI.subset hCI)
+  have hxC : ∃ i, P.x i ∈ C :=
+    exists_x_mem_circuit_of_subset_augmentPath hI hCJ hC
   let s : Finset (Fin (n + 1)) := Finset.univ.filter fun i => P.x i ∈ C
   have hs : s.Nonempty := by
     obtain ⟨i, hi⟩ := hxC
@@ -227,7 +238,7 @@ private theorem left_indep_of_noShortcut {n : ℕ}
       · rcases hzX with ⟨k, rfl⟩
         have hk_ne_zero : k ≠ 0 := by
           intro hk
-          exact hzneq (by simpa [hk])
+          exact hzneq (by simp [hk])
         have hk_not_source : ¬ M₁.Indep (insert (P.x k) I) := by
           simpa [xNext] using P.left_not_source (Fin.pred k hk_ne_zero)
         have hk_not_mem : P.x k ∉ I := P.x_not_mem k
@@ -259,11 +270,12 @@ private theorem left_indep_of_noShortcut {n : ℕ}
         have hk_ge : i.succ ≤ k := hjmin (by simpa using hzC)
         have hk_ne : k ≠ i.succ := by
           intro hk
-          exact hzneq (by simpa [hk])
+          exact hzneq (by simp [hk])
         have hk_gt : i.succ < k := lt_of_le_of_ne hk_ge hk_ne.symm
         have hk_ne_zero : k ≠ 0 := by
           intro hk
-          simpa [hk] using hk_gt
+          subst k
+          simp at hk_gt
         have hshortcut : ¬ M₁.Indep (insert (P.x k) (I \ {P.y i})) := by
           have hik : i < Fin.pred k hk_ne_zero := (Fin.lt_pred_iff hk_ne_zero).2 hk_gt
           simpa [xNext] using P.left_no_shortcut hik
@@ -289,24 +301,12 @@ private theorem right_indep_of_noShortcut {n : ℕ}
     · intro j
       simpa [xPrev] using (P.right_step j).subset_ground (by simp [xPrev])
   have hJ_ground : J ⊆ M₂.E := by
-    intro z hz
-    rcases hz with hz | hz
-    · exact hI.subset_ground hz.1
-    · rcases hz with ⟨i, rfl⟩
-      exact hx_ground i
+    exact augmentPath_subset_ground hI.subset_ground hx_ground
   by_contra hJ
   have hJ_dep : M₂.Dep J := (not_indep_iff hJ_ground).1 hJ
   obtain ⟨C, hCJ, hC⟩ := hJ_dep.exists_isCircuit_subset
-  have hxC : ∃ i, P.x i ∈ C := by
-    by_contra hnone
-    have hCI : C ⊆ I := by
-      intro z hz
-      have hzJ := hCJ hz
-      rcases hzJ with hzI | hzX
-      · exact hzI.1
-      · rcases hzX with ⟨i, rfl⟩
-        exact False.elim (hnone ⟨i, by simpa⟩)
-    exact hC.dep.not_indep (hI.subset hCI)
+  have hxC : ∃ i, P.x i ∈ C :=
+    exists_x_mem_circuit_of_subset_augmentPath hI hCJ hC
   let s : Finset (Fin (n + 1)) := Finset.univ.filter fun i => P.x i ∈ C
   have hs : s.Nonempty := by
     obtain ⟨i, hi⟩ := hxC
@@ -369,7 +369,7 @@ private theorem right_indep_of_noShortcut {n : ℕ}
         have hk_le : k ≤ i.castSucc := hjmax (by simpa using hzC)
         have hk_ne : k ≠ i.castSucc := by
           intro hk
-          exact hzneq (by simpa [xPrev, hk])
+          exact hzneq (by simp [xPrev, hk])
         have hk_lt : k < i.castSucc := lt_of_le_of_ne hk_le hk_ne
         cases k using Fin.lastCases with
         | last =>
@@ -384,7 +384,8 @@ private theorem right_indep_of_noShortcut {n : ℕ}
             have hk_ground : P.x k.castSucc ∈ M₂.E := hx_ground _
             have hdiff : M₂.Indep (I \ {P.y i}) := hI.diff _
             by_contra hk_closure
-            exact hshortcut ((hdiff.insert_indep_iff_of_notMem hk_not_mem).2 ⟨hk_ground, hk_closure⟩)
+            exact hshortcut <|
+              (hdiff.insert_indep_iff_of_notMem hk_not_mem).2 ⟨hk_ground, hk_closure⟩
     exact hx_not_closure <|
       M₂.closure_subset_closure_of_subset_closure hsubset
         (hC.mem_closure_diff_singleton_of_mem hjC)

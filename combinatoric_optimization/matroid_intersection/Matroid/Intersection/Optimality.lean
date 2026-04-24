@@ -213,28 +213,9 @@ theorem optimal_of_certificate [Finite α]
   intro J hJ
   have hleft := left_rank_eq_of_certificate hE hI hU
   have hright := right_rank_eq_of_certificate hE hI hU
-  have hJ_left : M₁.Indep (J ∩ U) := hJ.1.subset inter_subset_left
-  have hJ_right : M₂.Indep (J ∩ (M₁.E \ U)) := hJ.2.subset inter_subset_left
-  have hJ_partition : J = (J ∩ U) ∪ (J ∩ (M₁.E \ U)) := by
-    ext z
-    constructor
-    · intro hzJ
-      by_cases hzU : z ∈ U
-      · exact Or.inl ⟨hzJ, hzU⟩
-      · exact Or.inr ⟨hzJ, hJ.1.subset_ground hzJ, hzU⟩
-    · intro hz
-      exact hz.elim (fun hzL ↦ hzL.1) (fun hzR ↦ hzR.1)
-  have hJ_disj : Disjoint (J ∩ U) (J ∩ (M₁.E \ U)) := by
-    refine disjoint_left.2 ?_
-    intro z hzL hzR
-    exact hzR.2.2 hzL.2
   calc
-    J.encard = ((J ∩ U) ∪ (J ∩ (M₁.E \ U))).encard := congrArg Set.encard hJ_partition
-    _ = (J ∩ U).encard + (J ∩ (M₁.E \ U)).encard := by rw [Set.encard_union_eq hJ_disj]
-    _ ≤ M₁.eRk U + M₂.eRk (M₁.E \ U) := by
-      gcongr
-      · exact hJ_left.encard_le_eRk_of_subset inter_subset_right
-      · exact hJ_right.encard_le_eRk_of_subset inter_subset_right
+    J.encard ≤ M₁.eRk U + M₂.eRk (M₁.E \ U) :=
+      CommonIndep.encard_le_rank_partition hJ U
     _ = (I ∩ U).encard + M₂.eRk (M₁.E \ U) := by rw [hleft]
     _ = (I ∩ U).encard + (I \ U).encard := by rw [hright]
     _ = I.encard := by
@@ -286,14 +267,6 @@ theorem run_correct [Finite α] {I₀ I : Set α}
     (hRun : Run M₁ M₂ I₀ I) (hTerm : Terminal M₁ M₂ I) :
     ∀ ⦃J⦄, CommonIndep M₁ M₂ J → J.encard ≤ I.encard := by
   exact optimal_of_noAugmentingPath hE (commonIndep_of_run h₀ hRun) hTerm
-
-/-- Any certified augmentation run that has no outgoing augmentation step ends at an optimal
-common independent set. -/
-theorem run_correct_of_maximal [Finite α] {I₀ I : Set α}
-    (hE : SameGround M₁ M₂) (h₀ : CommonIndep M₁ M₂ I₀)
-    (hRun : Run M₁ M₂ I₀ I) (hNo : ¬ ∃ J, AugmentStep M₁ M₂ I J) :
-    ∀ ⦃J⦄, CommonIndep M₁ M₂ J → J.encard ≤ I.encard := by
-  exact run_correct hE h₀ hRun (terminal_of_no_augmentStep hNo)
 
 /-- Starting from any state, some certified augmentation run reaches a terminal exchange-graph
 condition. -/

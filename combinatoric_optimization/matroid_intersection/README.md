@@ -57,31 +57,25 @@ flowchart LR
   AP["Intersection.AugmentingPath"]:::inter
   NSP["Intersection.NoShortcutPath"]:::inter
   Opt["Intersection.Optimality"]:::inter
-  LO["Intersection.LengthOnePath"]:::inter
   IH(["Matroid.Intersection<br/>min-max headline"]):::hl
   Search["Edmonds.Search"]:::edm
   Algo["Edmonds.Algorithm"]:::edm
-  Edm(["Matroid.Edmonds<br/>algorithm umbrella"]):::edm
 
   CI --> EG --> AP --> NSP --> Opt
-  NSP --> LO
   Opt --> IH
-  LO --> IH
-  IH --> Search --> Algo --> Edm
+  IH --> Search --> Algo
 ```
 
 | Module | What it contains |
 |---|---|
-| `Matroid.CommonIndep` | top-level `CommonIndep`, `augmentLengthOne` |
+| `Matroid.CommonIndep` | top-level `CommonIndep`, `CommonIndep.empty`, `CommonIndep.encard_le_rank_partition` |
 | `Matroid.Intersection.ExchangeGraph` | exchange graph, `IndepExtension`/`SourceSet`/`SinkSet`, `Terminal`, `TerminalCertificate` |
 | `Matroid.Intersection.AugmentingPath` | `SimpleAugPath` and the minimality / splice machinery |
 | `Matroid.Intersection.NoShortcutPath` | `NoShortcutPath`, `AugmentStep`, `Run`, terminal iff, common-indep preservation |
 | `Matroid.Intersection.Optimality` | `augmentStep_wf`, `optimal_of_certificate`, `exists_optimal_terminal_run`, `TerminalCertificate.encard_eq_rank_partition` |
-| `Matroid.Intersection.LengthOnePath` | length-one augmenting step (separate, smaller machinery) |
-| `Matroid.Intersection` | umbrella + `CommonIndep.empty`, `CommonIndep.encard_le_rank_partition`, `exists_max_commonIndep_eq_min_rank_partition` |
+| `Matroid.Intersection` | umbrella + `exists_max_commonIndep_eq_min_rank_partition` |
 | `Matroid.Edmonds.Search` | `SearchSpec` interface; noncomputable `classical` witness |
 | `Matroid.Edmonds.Algorithm` | `SearchSpec.iterate` + correctness theorems; algorithmic min-max |
-| `Matroid.Edmonds` | algorithm-layer umbrella |
 
 ## Out of scope
 
