@@ -69,34 +69,34 @@ f(u,v) \le c(u,v)
 For a flow \(f\):
 
 \[
-\operatorname{outflow}_f(v)=\sum_w f(v,w)
+\mathrm{outflow}_f(v)=\sum_w f(v,w)
 \]
 \[
-\operatorname{inflow}_f(v)=\sum_u f(u,v)
+\mathrm{inflow}_f(v)=\sum_u f(u,v)
 \]
 \[
-\operatorname{value}(f)=\operatorname{outflow}_f(s)
+\mathrm{value}(f)=\mathrm{outflow}_f(s)
 \]
 
 For a cut \(S \subseteq V\) with \(s \in S\) and \(t \notin S\):
 
 \[
-\operatorname{cutCapacity}(S)=\sum_{u\in S,\ v\notin S} c(u,v)
+\mathrm{cutCapacity}(S)=\sum_{u\in S,\ v\notin S} c(u,v)
 \]
 \[
-\operatorname{outAcross}_f(S)=\sum_{u\in S,\ v\notin S} f(u,v)
+\mathrm{outAcross}_f(S)=\sum_{u\in S,\ v\notin S} f(u,v)
 \]
 \[
-\operatorname{inAcross}_f(S)=\sum_{u\in S,\ v\notin S} f(v,u)
+\mathrm{inAcross}_f(S)=\sum_{u\in S,\ v\notin S} f(v,u)
 \]
 
 The two bookkeeping expressions used throughout are:
 
 \[
-\operatorname{netOn}_f(S)=\sum_{v\in S}\operatorname{outflow}_f(v)-\sum_{v\in S}\operatorname{inflow}_f(v)
+\mathrm{netOn}_f(S)=\sum_{v\in S}\mathrm{outflow}_f(v)-\sum_{v\in S}\mathrm{inflow}_f(v)
 \]
 \[
-\operatorname{cutFlow}_f(S)=\operatorname{outAcross}_f(S)-\operatorname{inAcross}_f(S)
+\mathrm{cutFlow}_f(S)=\mathrm{outAcross}_f(S)-\mathrm{inAcross}_f(S)
 \]
 
 ---
@@ -113,7 +113,7 @@ They are generic path lemmas, not specific to flows.
 Changing the path endpoint by equality does not change its length.
 
 \[
-\operatorname{length}(h \triangleright p)=\operatorname{length}(p)
+\mathrm{length}(h \triangleright p)=\mathrm{length}(p)
 \]
 
 ### `end_eq`
@@ -129,9 +129,9 @@ p.end=b
 If a path repeats a vertex, then one can remove the cycle and obtain a strictly shorter path with the same endpoints.
 
 \[
-\neg \operatorname{Nodup}(p.vertices)
+\neg \mathrm{Nodup}(p.vertices)
 \;\Rightarrow\;
-\exists q,\ q:a\to b,\ \operatorname{length}(q)<\operatorname{length}(p)
+\exists q,\ q:a\to b,\ \mathrm{length}(q)<\mathrm{length}(p)
 \]
 
 This is the formal statement behind the familiar idea:
@@ -143,7 +143,7 @@ This is the formal statement behind the familiar idea:
 Every path can be replaced by a simple path with no repeated vertices.
 
 \[
-\forall p:a\to b,\ \exists q:a\to b,\ \operatorname{Nodup}(q.vertices)
+\forall p:a\to b,\ \exists q:a\to b,\ \mathrm{Nodup}(q.vertices)
 \]
 
 This matters later because augmentation is easiest to verify on simple residual paths.
@@ -180,7 +180,7 @@ This follows from \(c(t,v)=0\).
 The source has zero inflow.
 
 \[
-\operatorname{inflow}_f(s)=0
+\mathrm{inflow}_f(s)=0
 \]
 
 ### `netOn_empty`
@@ -188,7 +188,7 @@ The source has zero inflow.
 The empty set has zero net flow.
 
 \[
-\operatorname{netOn}_f(\varnothing)=0
+\mathrm{netOn}_f(\varnothing)=0
 \]
 
 ### `netOn_insert`
@@ -196,13 +196,13 @@ The empty set has zero net flow.
 Adding a vertex to a set changes net flow by that vertex’s local imbalance.
 
 \[
-\operatorname{netOn}_f(S\cup\{x\})
+\mathrm{netOn}_f(S\cup\{x\})
 =
-\operatorname{netOn}_f(S)
+\mathrm{netOn}_f(S)
 +
-\operatorname{outflow}_f(x)
+\mathrm{outflow}_f(x)
 -
-\operatorname{inflow}_f(x)
+\mathrm{inflow}_f(x)
 \]
 
 ### `netOn_eq_zero_of_conserved_subset`
@@ -212,7 +212,7 @@ If every vertex in \(S\) is an interior vertex, then the total net flow on \(S\)
 \[
 (\forall v\in S,\ v\neq s \land v\neq t)
 \Rightarrow
-\operatorname{netOn}_f(S)=0
+\mathrm{netOn}_f(S)=0
 \]
 
 This is just conservation summed over a set.
@@ -224,7 +224,7 @@ If \(S\) is a source-side cut, then the net flow on \(S\) equals the flow value.
 \[
 s\in S,\ t\notin S
 \Rightarrow
-\operatorname{netOn}_f(S)=\operatorname{value}(f)
+\mathrm{netOn}_f(S)=\mathrm{value}(f)
 \]
 
 This is the first key cut identity.
@@ -238,7 +238,7 @@ These statements are in
 
 This file turns local flow bookkeeping into the standard inequality
 \[
-\operatorname{value}(f)\le \operatorname{cutCapacity}(S).
+\mathrm{value}(f)\le \mathrm{cutCapacity}(S).
 \]
 
 ### `outAcross_eq_filter_aux`
@@ -268,7 +268,7 @@ The same for incoming terms.
 Outflow from \(u\) splits into inside-target and outside-target parts.
 
 \[
-\operatorname{outflow}_f(u)
+\mathrm{outflow}_f(u)
 =
 \sum_{v\in S} f(u,v)
 +
@@ -280,7 +280,7 @@ Outflow from \(u\) splits into inside-target and outside-target parts.
 Inflow into \(u\) splits into inside-source and outside-source parts.
 
 \[
-\operatorname{inflow}_f(u)
+\mathrm{inflow}_f(u)
 =
 \sum_{v\in S} f(v,u)
 +
@@ -292,7 +292,7 @@ Inflow into \(u\) splits into inside-source and outside-source parts.
 The total out-across quantity can be rewritten as
 
 \[
-\operatorname{outAcross}_f(S)
+\mathrm{outAcross}_f(S)
 =
 \sum_{u\in S}\sum_{v\notin S} f(u,v)
 \]
@@ -302,7 +302,7 @@ The total out-across quantity can be rewritten as
 Likewise,
 
 \[
-\operatorname{inAcross}_f(S)
+\mathrm{inAcross}_f(S)
 =
 \sum_{u\in S}\sum_{v\notin S} f(v,u)
 \]
@@ -312,11 +312,11 @@ Likewise,
 Total outflow from \(S\) splits into internal flow plus flow leaving \(S\).
 
 \[
-\sum_{u\in S}\operatorname{outflow}_f(u)
+\sum_{u\in S}\mathrm{outflow}_f(u)
 =
 \sum_{u\in S}\sum_{v\in S} f(u,v)
 +
-\operatorname{outAcross}_f(S)
+\mathrm{outAcross}_f(S)
 \]
 
 ### `inflow_sum_eq`
@@ -324,11 +324,11 @@ Total outflow from \(S\) splits into internal flow plus flow leaving \(S\).
 Total inflow into \(S\) splits into internal flow plus flow entering \(S\).
 
 \[
-\sum_{u\in S}\operatorname{inflow}_f(u)
+\sum_{u\in S}\mathrm{inflow}_f(u)
 =
 \sum_{u\in S}\sum_{v\in S} f(v,u)
 +
-\operatorname{inAcross}_f(S)
+\mathrm{inAcross}_f(S)
 \]
 
 ### `internal_sum_comm`
@@ -348,18 +348,18 @@ This is the exact algebraic reason the internal flow cancels.
 Net flow on a set equals net boundary flow across the cut of that set.
 
 \[
-\operatorname{netOn}_f(S)=\operatorname{cutFlow}_f(S)
+\mathrm{netOn}_f(S)=\mathrm{cutFlow}_f(S)
 \]
 
 In expanded form:
 
 \[
-\sum_{v\in S}\operatorname{outflow}_f(v)
+\sum_{v\in S}\mathrm{outflow}_f(v)
 -
-\sum_{v\in S}\operatorname{inflow}_f(v)
+\sum_{v\in S}\mathrm{inflow}_f(v)
 
 =
-\operatorname{outAcross}_f(S)-\operatorname{inAcross}_f(S)
+\mathrm{outAcross}_f(S)-\mathrm{inAcross}_f(S)
 \]
 
 ### `outAcross_le_cutCapacity`
@@ -367,7 +367,7 @@ In expanded form:
 The flow leaving a cut is at most the capacity of the cut.
 
 \[
-\operatorname{outAcross}_f(S)\le \operatorname{cutCapacity}(S)
+\mathrm{outAcross}_f(S)\le \mathrm{cutCapacity}(S)
 \]
 
 This is just the edgewise inequality \(f(u,v)\le c(u,v)\), summed over all cut edges.
@@ -379,20 +379,20 @@ This is weak duality: every flow is bounded by every cut.
 \[
 S\text{ is a cut}
 \Rightarrow
-\operatorname{value}(f)\le \operatorname{cutCapacity}(S)
+\mathrm{value}(f)\le \mathrm{cutCapacity}(S)
 \]
 
 The proof is:
 
-1. \(\operatorname{value}(f)=\operatorname{netOn}_f(S)\)
-2. \(\operatorname{netOn}_f(S)=\operatorname{cutFlow}_f(S)\)
-3. \(\operatorname{cutFlow}_f(S)=\operatorname{outAcross}_f(S)-\operatorname{inAcross}_f(S)\le \operatorname{outAcross}_f(S)\)
-4. \(\operatorname{outAcross}_f(S)\le \operatorname{cutCapacity}(S)\)
+1. \(\mathrm{value}(f)=\mathrm{netOn}_f(S)\)
+2. \(\mathrm{netOn}_f(S)=\mathrm{cutFlow}_f(S)\)
+3. \(\mathrm{cutFlow}_f(S)=\mathrm{outAcross}_f(S)-\mathrm{inAcross}_f(S)\le \mathrm{outAcross}_f(S)\)
+4. \(\mathrm{outAcross}_f(S)\le \mathrm{cutCapacity}(S)\)
 
 So
 
 \[
-\operatorname{value}(f)\le \operatorname{cutCapacity}(S).
+\mathrm{value}(f)\le \mathrm{cutCapacity}(S).
 \]
 
 ---
@@ -420,7 +420,7 @@ This is the usual residual graph.
 Define `reachable(f)` to be the set of vertices reachable from \(s\) in the residual graph.
 
 \[
-v\in \operatorname{reachable}(f)
+v\in \mathrm{reachable}(f)
 \iff
 \exists \text{ residual path } s\leadsto v
 \]
@@ -430,7 +430,7 @@ v\in \operatorname{reachable}(f)
 The source is always reachable from itself.
 
 \[
-s\in \operatorname{reachable}(f)
+s\in \mathrm{reachable}(f)
 \]
 
 ### `mem_reachable_of_mem_reachable_of_edge`
@@ -438,9 +438,9 @@ s\in \operatorname{reachable}(f)
 Reachability is closed under following residual edges.
 
 \[
-u\in \operatorname{reachable}(f),\ u\to v\text{ residual}
+u\in \mathrm{reachable}(f),\ u\to v\text{ residual}
 \Rightarrow
-v\in \operatorname{reachable}(f)
+v\in \mathrm{reachable}(f)
 \]
 
 ### `no_edge_of_mem_reachable_of_not_mem_reachable`
@@ -453,7 +453,7 @@ u\in R,\ v\notin R
 \text{no residual edge }u\to v
 \]
 
-where \(R=\operatorname{reachable}(f)\).
+where \(R=\mathrm{reachable}(f)\).
 
 This is simply because such an edge would make \(v\) reachable.
 
@@ -496,7 +496,7 @@ s\in R,\ t\notin R
 Across the reachable cut, every outward edge is saturated, so flow out equals cut capacity.
 
 \[
-\operatorname{outAcross}_f(R)=\operatorname{cutCapacity}(R)
+\mathrm{outAcross}_f(R)=\mathrm{cutCapacity}(R)
 \]
 
 ### `inAcross_reachable_eq_zero`
@@ -504,7 +504,7 @@ Across the reachable cut, every outward edge is saturated, so flow out equals cu
 Across the reachable cut, there is no incoming reverse flow.
 
 \[
-\operatorname{inAcross}_f(R)=0
+\mathrm{inAcross}_f(R)=0
 \]
 
 ### `value_eq_cutCapacity_reachable`
@@ -514,21 +514,21 @@ If there is no residual path from \(s\) to \(t\), then the value of the flow equ
 \[
 \neg(\exists \text{ residual path } s\leadsto t)
 \Rightarrow
-\operatorname{value}(f)=\operatorname{cutCapacity}(R)
+\mathrm{value}(f)=\mathrm{cutCapacity}(R)
 \]
 
 This is the standard textbook certificate:
 
 1. \(R\) is a cut
-2. \(\operatorname{value}(f)=\operatorname{cutFlow}_f(R)\)
-3. \(\operatorname{cutFlow}_f(R)=\operatorname{outAcross}_f(R)-\operatorname{inAcross}_f(R)\)
-4. \(\operatorname{outAcross}_f(R)=\operatorname{cutCapacity}(R)\)
-5. \(\operatorname{inAcross}_f(R)=0\)
+2. \(\mathrm{value}(f)=\mathrm{cutFlow}_f(R)\)
+3. \(\mathrm{cutFlow}_f(R)=\mathrm{outAcross}_f(R)-\mathrm{inAcross}_f(R)\)
+4. \(\mathrm{outAcross}_f(R)=\mathrm{cutCapacity}(R)\)
+5. \(\mathrm{inAcross}_f(R)=0\)
 
 So
 
 \[
-\operatorname{value}(f)=\operatorname{cutCapacity}(R).
+\mathrm{value}(f)=\mathrm{cutCapacity}(R).
 \]
 
 ### `isMaxFlow_of_noResidualPath`
@@ -544,7 +544,7 @@ f \text{ is max flow}
 Proof: for any other flow \(g\),
 
 \[
-\operatorname{value}(g)\le \operatorname{cutCapacity}(R)=\operatorname{value}(f)
+\mathrm{value}(g)\le \mathrm{cutCapacity}(R)=\mathrm{value}(f)
 \]
 
 by weak duality plus the previous equality.
@@ -562,7 +562,7 @@ R \text{ is a min cut}
 Proof: for any cut \(T\),
 
 \[
-\operatorname{cutCapacity}(R)=\operatorname{value}(f)\le \operatorname{cutCapacity}(T)
+\mathrm{cutCapacity}(R)=\mathrm{value}(f)\le \mathrm{cutCapacity}(T)
 \]
 
 again by weak duality.
@@ -595,13 +595,13 @@ To formalize this, the code builds a new value function by updating entries alon
 For any matrix-like function \(g\):
 
 \[
-\operatorname{augOut}(g,x)=\sum_y g(x,y)
+\mathrm{augOut}(g,x)=\sum_y g(x,y)
 \]
 \[
-\operatorname{augIn}(g,x)=\sum_y g(y,x)
+\mathrm{augIn}(g,x)=\sum_y g(y,x)
 \]
 \[
-\operatorname{augBal}(g,x)=\operatorname{augOut}(g,x)-\operatorname{augIn}(g,x)
+\mathrm{augBal}(g,x)=\mathrm{augOut}(g,x)-\mathrm{augIn}(g,x)
 \]
 
 This is the balance of vertex \(x\) under \(g\).
@@ -611,7 +611,7 @@ This is the balance of vertex \(x\) under \(g\).
 Add one unit to a single edge \((a,b)\):
 
 \[
-(\operatorname{addEntry}(g,a,b))(x,y)=
+(\mathrm{addEntry}(g,a,b))(x,y)=
 \begin{cases}
 g(x,y)+1 & (x,y)=(a,b)\\
 g(x,y) & \text{otherwise}
@@ -623,7 +623,7 @@ g(x,y) & \text{otherwise}
 Subtract one unit from a single edge \((a,b)\):
 
 \[
-(\operatorname{subEntry}(g,a,b))(x,y)=
+(\mathrm{subEntry}(g,a,b))(x,y)=
 \begin{cases}
 g(x,y)-1 & (x,y)=(a,b)\\
 g(x,y) & \text{otherwise}
@@ -635,9 +635,9 @@ g(x,y) & \text{otherwise}
 Adding one unit at \((a,b)\) changes only the outgoing sum of \(a\).
 
 \[
-\operatorname{augOut}(\operatorname{addEntry}(g,a,b),x)
+\mathrm{augOut}(\mathrm{addEntry}(g,a,b),x)
 =
-\operatorname{augOut}(g,x)+\mathbf 1_{x=a}
+\mathrm{augOut}(g,x)+\mathbf 1_{x=a}
 \]
 
 ### `augIn_addEntry`
@@ -645,9 +645,9 @@ Adding one unit at \((a,b)\) changes only the outgoing sum of \(a\).
 Adding one unit at \((a,b)\) changes only the incoming sum of \(b\).
 
 \[
-\operatorname{augIn}(\operatorname{addEntry}(g,a,b),x)
+\mathrm{augIn}(\mathrm{addEntry}(g,a,b),x)
 =
-\operatorname{augIn}(g,x)+\mathbf 1_{x=b}
+\mathrm{augIn}(g,x)+\mathbf 1_{x=b}
 \]
 
 ### `augBal_addEntry`
@@ -655,9 +655,9 @@ Adding one unit at \((a,b)\) changes only the incoming sum of \(b\).
 The balance change under a forward augmentation step is:
 
 \[
-\operatorname{augBal}(\operatorname{addEntry}(g,a,b),x)
+\mathrm{augBal}(\mathrm{addEntry}(g,a,b),x)
 =
-\operatorname{augBal}(g,x)+\mathbf 1_{x=a}-\mathbf 1_{x=b}
+\mathrm{augBal}(g,x)+\mathbf 1_{x=a}-\mathbf 1_{x=b}
 \]
 
 ### `sum_subEntry_row`
@@ -667,7 +667,7 @@ If \(g(a,b)>0\), subtracting one unit from \((a,b)\) decreases the row sum of \(
 \[
 g(a,b)>0
 \Rightarrow
-\sum_y (\operatorname{subEntry}(g,a,b))(a,y)
+\sum_y (\mathrm{subEntry}(g,a,b))(a,y)
 =
 \sum_y g(a,y)-1
 \]
@@ -679,7 +679,7 @@ If \(g(a,b)>0\), subtracting one unit from \((a,b)\) decreases the column sum of
 \[
 g(a,b)>0
 \Rightarrow
-\sum_y (\operatorname{subEntry}(g,a,b))(y,b)
+\sum_y (\mathrm{subEntry}(g,a,b))(y,b)
 =
 \sum_y g(y,b)-1
 \]
@@ -687,17 +687,17 @@ g(a,b)>0
 ### `augOut_subEntry`
 
 \[
-\operatorname{augOut}(\operatorname{subEntry}(g,a,b),x)
+\mathrm{augOut}(\mathrm{subEntry}(g,a,b),x)
 =
-\operatorname{augOut}(g,x)-\mathbf 1_{x=a}
+\mathrm{augOut}(g,x)-\mathbf 1_{x=a}
 \]
 
 ### `augIn_subEntry`
 
 \[
-\operatorname{augIn}(\operatorname{subEntry}(g,a,b),x)
+\mathrm{augIn}(\mathrm{subEntry}(g,a,b),x)
 =
-\operatorname{augIn}(g,x)-\mathbf 1_{x=b}
+\mathrm{augIn}(g,x)-\mathbf 1_{x=b}
 \]
 
 ### `augBal_subEntry_of_ne`
@@ -705,9 +705,9 @@ g(a,b)>0
 For \(a\neq b\), a backward augmentation step changes balance by
 
 \[
-\operatorname{augBal}(\operatorname{subEntry}(g,a,b),x)
+\mathrm{augBal}(\mathrm{subEntry}(g,a,b),x)
 =
-\operatorname{augBal}(g,x)-\mathbf 1_{x=a}+\mathbf 1_{x=b}
+\mathrm{augBal}(g,x)-\mathbf 1_{x=a}+\mathbf 1_{x=b}
 \]
 
 ### `augmentVal`
@@ -726,7 +726,7 @@ If one endpoint of an edge is not on the path, augmentation leaves that edge unc
 \[
 x\notin p.vertices \ \text{or}\ y\notin p.vertices
 \Rightarrow
-\operatorname{augmentVal}(p)(x,y)=f(x,y)
+\mathrm{augmentVal}(p)(x,y)=f(x,y)
 \]
 
 ### `augmentVal_le_cap_of_nodup`
@@ -734,9 +734,9 @@ x\notin p.vertices \ \text{or}\ y\notin p.vertices
 If the path is simple, the augmented value function still respects capacities.
 
 \[
-\operatorname{Nodup}(p.vertices)
+\mathrm{Nodup}(p.vertices)
 \Rightarrow
-\forall a,b,\ \operatorname{augmentVal}(p)(a,b)\le c(a,b)
+\forall a,b,\ \mathrm{augmentVal}(p)(a,b)\le c(a,b)
 \]
 
 This is where simplicity matters: repeated vertices would make local accounting harder.
@@ -746,9 +746,9 @@ This is where simplicity matters: repeated vertices would make local accounting 
 If \(p:u\leadsto v\) is a simple residual path, then augmentation changes balances only at the endpoints.
 
 \[
-\operatorname{augBal}(\operatorname{augmentVal}(p),x)
+\mathrm{augBal}(\mathrm{augmentVal}(p),x)
 =
-\operatorname{augBal}(f,x)+\mathbf 1_{x=u}-\mathbf 1_{x=v}
+\mathrm{augBal}(f,x)+\mathbf 1_{x=u}-\mathbf 1_{x=v}
 \]
 
 So interior vertices stay balanced.
@@ -760,7 +760,7 @@ Any residual path can be replaced by a simple one.
 \[
 p:u\leadsto v
 \Rightarrow
-\exists q:u\leadsto v,\ \operatorname{Nodup}(q.vertices)
+\exists q:u\leadsto v,\ \mathrm{Nodup}(q.vertices)
 \]
 
 This imports the generic path-shortening lemmas into the residual-graph context.
@@ -772,7 +772,7 @@ Every interior vertex of a genuine flow has zero balance.
 \[
 x\neq s,t
 \Rightarrow
-\operatorname{augBal}(f,x)=0
+\mathrm{augBal}(f,x)=0
 \]
 
 ### `augBal_source_eq_value`
@@ -780,7 +780,7 @@ x\neq s,t
 The source balance equals the flow value.
 
 \[
-\operatorname{augBal}(f,s)=\operatorname{value}(f)
+\mathrm{augBal}(f,s)=\mathrm{value}(f)
 \]
 
 This uses the fact that source inflow is zero.
@@ -790,16 +790,16 @@ This uses the fact that source inflow is zero.
 If there is a simple residual path from \(s\) to \(t\), then there exists a new legal flow \(g\) whose value is larger by exactly \(1\).
 
 \[
-p:s\leadsto t,\ \operatorname{Nodup}(p.vertices)
+p:s\leadsto t,\ \mathrm{Nodup}(p.vertices)
 \Rightarrow
-\exists g,\ \operatorname{value}(g)=\operatorname{value}(f)+1
+\exists g,\ \mathrm{value}(g)=\mathrm{value}(f)+1
 \]
 
 This is the main augmentation theorem.
 
 The proof is:
 
-1. define \(g.val=\operatorname{augmentVal}(p)\)
+1. define \(g.val=\mathrm{augmentVal}(p)\)
 2. use `augmentVal_le_cap_of_nodup` for the capacity bound
 3. use `augBal_augmentVal_of_nodup` and `augBal_eq_zero_of_conserve` to prove conservation at interior vertices
 4. use `augBal_source_eq_value` to compute the new source value
@@ -811,7 +811,7 @@ If there is any residual path from \(s\) to \(t\), then there is a strictly bett
 \[
 p:s\leadsto t
 \Rightarrow
-\exists g,\ \operatorname{value}(f)<\operatorname{value}(g)
+\exists g,\ \mathrm{value}(f)<\mathrm{value}(g)
 \]
 
 Proof:
@@ -854,7 +854,7 @@ It obviously satisfies capacity and conservation.
 Starting from any flow \(f\), there exists a flow \(g\) with value at least as large as \(f\) and with no residual path from \(s\) to \(t\).
 
 \[
-\exists g,\ \operatorname{value}(f)\le \operatorname{value}(g)
+\exists g,\ \mathrm{value}(f)\le \mathrm{value}(g)
 \ \land\
 \neg(\exists \text{ residual path } s\leadsto t \text{ for } g)
 \]
@@ -864,13 +864,13 @@ This is the algorithmic termination theorem.
 The proof uses strong induction on the gap
 
 \[
-C-\operatorname{value}(f)
+C-\mathrm{value}(f)
 \]
 
 where
 
 \[
-C=\operatorname{cutCapacity}(\{s\})
+C=\mathrm{cutCapacity}(\{s\})
 \]
 
 is a fixed upper bound on every flow value, by weak duality.
@@ -878,7 +878,7 @@ is a fixed upper bound on every flow value, by weak duality.
 If a residual path exists, `exists_better_flow_of_residualPath` gives a strictly better flow \(g\), so
 
 \[
-C-\operatorname{value}(g) < C-\operatorname{value}(f).
+C-\mathrm{value}(g) < C-\mathrm{value}(f).
 \]
 
 Then the induction hypothesis applies.
@@ -906,7 +906,7 @@ There exists a maximum flow and a minimum cut.
 Proof:
 
 1. take a terminal flow \(f\)
-2. let \(S=\operatorname{reachable}(f)\)
+2. let \(S=\mathrm{reachable}(f)\)
 3. apply `isMaxFlow_and_isMinCut_of_noResidualPath`
 
 ### `exists_isMaxFlow_and_isMinCut_and_value_eq_cutCapacity`
@@ -914,7 +914,7 @@ Proof:
 There exists a maximum flow \(f\) and a minimum cut \(S\) with equal value and capacity.
 
 \[
-\exists f,\exists S,\ f\text{ max flow} \land S\text{ min cut} \land \operatorname{value}(f)=\operatorname{cutCapacity}(S)
+\exists f,\exists S,\ f\text{ max flow} \land S\text{ min cut} \land \mathrm{value}(f)=\mathrm{cutCapacity}(S)
 \]
 
 This is the cleanest existential statement of max-flow/min-cut.
@@ -928,9 +928,9 @@ There exists a number \(n\) which is simultaneously:
 
 \[
 \exists n,\
-(\exists f,\ f\text{ max flow} \land \operatorname{value}(f)=n)
+(\exists f,\ f\text{ max flow} \land \mathrm{value}(f)=n)
 \land
-(\exists S,\ S\text{ min cut} \land \operatorname{cutCapacity}(S)=n)
+(\exists S,\ S\text{ min cut} \land \mathrm{cutCapacity}(S)=n)
 \]
 
 This is the final numeric equality form.
@@ -952,7 +952,7 @@ Using:
 we get
 
 \[
-\operatorname{value}(f)\le \operatorname{cutCapacity}(S)
+\mathrm{value}(f)\le \mathrm{cutCapacity}(S)
 \]
 
 for every flow \(f\) and every cut \(S\).
@@ -972,7 +972,7 @@ we get:
 \[
 \exists \text{ residual path } s\leadsto t
 \Rightarrow
-\exists g,\ \operatorname{value}(g)>\operatorname{value}(f)
+\exists g,\ \mathrm{value}(g)>\mathrm{value}(f)
 \]
 
 So a flow with a residual \(s\to t\) path cannot be maximum.
@@ -982,7 +982,7 @@ So a flow with a residual \(s\to t\) path cannot be maximum.
 Let
 
 \[
-R=\operatorname{reachable}(f).
+R=\mathrm{reachable}(f).
 \]
 
 Using:
@@ -999,19 +999,19 @@ we get
 \[
 \neg(s\leadsto t \text{ residual})
 \Rightarrow
-\operatorname{value}(f)=\operatorname{cutCapacity}(R).
+\mathrm{value}(f)=\mathrm{cutCapacity}(R).
 \]
 
 Then weak duality forces:
 
 \[
-\operatorname{value}(g)\le \operatorname{cutCapacity}(R)=\operatorname{value}(f)
+\mathrm{value}(g)\le \mathrm{cutCapacity}(R)=\mathrm{value}(f)
 \]
 
 for every flow \(g\), so \(f\) is maximum; and
 
 \[
-\operatorname{cutCapacity}(R)=\operatorname{value}(f)\le \operatorname{cutCapacity}(T)
+\mathrm{cutCapacity}(R)=\mathrm{value}(f)\le \mathrm{cutCapacity}(T)
 \]
 
 for every cut \(T\), so \(R\) is minimum.
@@ -1030,7 +1030,7 @@ we prove by strong induction that repeated augmentation must eventually stop.
 The measure is
 
 \[
-\operatorname{cutCapacity}(\{s\})-\operatorname{value}(f),
+\mathrm{cutCapacity}(\{s\})-\mathrm{value}(f),
 \]
 
 which decreases whenever a residual path exists.
@@ -1045,7 +1045,7 @@ Using:
 we conclude:
 
 \[
-\exists f,\exists S,\ f\text{ max flow},\ S\text{ min cut},\ \operatorname{value}(f)=\operatorname{cutCapacity}(S).
+\exists f,\exists S,\ f\text{ max flow},\ S\text{ min cut},\ \mathrm{value}(f)=\mathrm{cutCapacity}(S).
 \]
 
 That is exactly the max-flow / min-cut theorem.
